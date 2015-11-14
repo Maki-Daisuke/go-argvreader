@@ -6,7 +6,7 @@ import (
 )
 
 type reader struct {
-	current io.Reader
+	current *os.File
 	args    []string
 }
 
@@ -33,6 +33,7 @@ func (r *reader) Read(p []byte) (n int, err error) {
 		if err == nil {
 			return n, err
 		}
+		r.current.Close()
 		if err == io.EOF {
 			err := r.openNext()
 			if err == io.EOF {
