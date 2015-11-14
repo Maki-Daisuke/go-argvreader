@@ -15,15 +15,19 @@ func New() io.Reader {
 	if len(args) == 0 {
 		return os.Stdin
 	}
-	r := &reader{
+	return &reader{
 		current: nil,
 		args:    args,
 	}
-	r.openNext()
-	return r
 }
 
 func (r *reader) Read(p []byte) (n int, err error) {
+	if r.current == nil {
+		err = r.openNext()
+		if err != nil {
+			return 0, err
+		}
+	}
 	for {
 		n, err = r.current.Read(p)
 		if err == nil {
@@ -43,6 +47,7 @@ func (r *reader) Read(p []byte) (n int, err error) {
 }
 
 func (r *reader) openNext() error {
+	r.current = nil
 	if len(r.args) == 0 {
 		return io.EOF
 	}
