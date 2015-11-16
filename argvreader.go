@@ -5,23 +5,44 @@ import (
 	"os"
 )
 
-type reader struct {
+type Reader interface {
+	io.Reader
+	CurrentFileName() string
+}
+
+type stdinReader struct {
+	*os.File // for os.Stdin only
+}
+
+func (r stdinReader) CurrentFileName() string {
+	return "-"
+}
+
+type argvReader struct {
 	current *os.File
 	args    []string
 }
 
-func New() io.Reader {
+func New() Reader {
 	args := os.Args[1:]
 	if len(args) == 0 {
-		return os.Stdin
+		return stdinReader{os.Stdin}
 	}
-	return &reader{
+	return &argvReader{
 		current: nil,
 		args:    args,
 	}
 }
 
-func (r *reader) Read(p []byte) (n int, err error) {
+func (r *argvReader) CurrentFileName() string {
+	if r.current == nil {
+		return ""
+	} else {
+		return r.current.Name()
+	}
+}
+
+func (r *argvReader) Read(p []byte) (n int, err error) {
 	if r.current == nil {
 		err = r.openNext()
 		if err != nil {
@@ -47,7 +68,7 @@ func (r *reader) Read(p []byte) (n int, err error) {
 	}
 }
 
-func (r *reader) openNext() error {
+func (r *argvReader) openNext() error {
 	r.current = nil
 	if len(r.args) == 0 {
 		return io.EOF
