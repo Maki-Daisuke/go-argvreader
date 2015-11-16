@@ -23,8 +23,7 @@ type argvReader struct {
 	args    []string
 }
 
-func New() Reader {
-	args := os.Args[1:]
+func NewReader(args []string) Reader {
 	if len(args) == 0 {
 		return stdinReader{os.Stdin}
 	}
@@ -32,6 +31,10 @@ func New() Reader {
 		current: nil,
 		args:    args,
 	}
+}
+
+func New() Reader {
+	return NewReader(os.Args[1:])
 }
 
 func (r *argvReader) CurrentFileName() string {
