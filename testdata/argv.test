@@ -10,3 +10,33 @@ foo.txt: bar
 foo.txt: baz
 >>>2
 >>>= 0
+
+# Test mix of files and STDIN
+go run test.go hoge.txt - foo.txt
+<<<
+Wow!
+>>>
+hoge.txt: hoge
+hoge.txt: fuga
+hoge.txt: piyo
+-: Wow!
+foo.txt: foo
+foo.txt: bar
+foo.txt: baz
+>>>2
+>>>= 0
+
+# Use "-" multiple times
+go run test.go - hoge.txt - foo.txt
+<<<
+Wow!
+>>>
+-: Wow!
+hoge.txt: hoge
+hoge.txt: fuga
+hoge.txt: piyo
+foo.txt: foo
+foo.txt: bar
+foo.txt: baz
+>>>2
+>>>= 0

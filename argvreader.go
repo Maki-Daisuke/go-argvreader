@@ -65,23 +65,23 @@ import (
 // Reader provides functionality just like Perl's `ARGV` file-handle and
 // `$ARGV` variable.
 //
-// CurrnetFileName returns a file name that is currently open and being read.
+// Name returns a file name that is currently open and being read.
 // It returns "-" if the Reader is reading from STDIN.
 type Reader interface {
 	io.Reader
-	CurrentFileName() string
+	Name() string
 }
 
 type stdinReader struct {
 	*os.File // for os.Stdin only
 }
 
-func (r stdinReader) CurrentFileName() string {
+func (r stdinReader) Name() string {
 	return "-"
 }
 
 type argvReader struct {
-	current *os.File
+	current Reader
 	args    []string
 }
 
@@ -102,7 +102,7 @@ func New() Reader {
 	return NewReader(os.Args[1:])
 }
 
-func (r *argvReader) CurrentFileName() string {
+func (r *argvReader) Name() string {
 	if r.current == nil {
 		return ""
 	} else {
@@ -122,7 +122,9 @@ func (r *argvReader) Read(p []byte) (n int, err error) {
 		if err == nil {
 			return n, err
 		}
-		r.current.Close()
+		if f, ok := r.current.(*os.File); ok {
+			f.Close()
+		}
 		if err == io.EOF {
 			err := r.openNext()
 			if err == io.EOF {
@@ -141,11 +143,16 @@ func (r *argvReader) openNext() error {
 	if len(r.args) == 0 {
 		return io.EOF
 	}
-	file, err := os.Open(r.args[0])
-	if err != nil {
-		return err
-	}
-	r.current = file
+	next := r.args[0]
 	r.args = r.args[1:]
+	if next == "-" {
+		r.current = stdinReader{os.Stdin}
+	} else {
+		file, err := os.Open(next)
+		if err != nil {
+			return err
+		}
+		r.current = file
+	}
 	return nil
 }
