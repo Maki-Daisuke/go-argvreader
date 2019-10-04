@@ -10,12 +10,16 @@ import (
 
 func main() {
 	r := argvreader.New()
-	err := forlines.Do(r, func(line string) error {
-		fmt.Printf("%s: %s\n", r.Name(), line)
-		return nil
-	})
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+	for {
+		err := forlines.Do(r, func(line string) error {
+			fmt.Printf("%s: %s\n", r.Name(), line)
+			return nil
+		})
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			continue
+		}
+		break
 	}
 	os.Exit(0)
 }

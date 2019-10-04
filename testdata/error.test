@@ -1,0 +1,26 @@
+# Non-existing file
+go run test.go no-such-file
+<<<
+>>>
+>>>2 /no such file or directory/
+>>>= 0
+
+# Non-existing file after regular file
+go run test.go hoge.txt no-such-file
+<<<
+>>>
+hoge.txt: hoge
+hoge.txt: fuga
+hoge.txt: piyo
+>>>2 /no such file or directory/
+>>>= 0
+
+# Non-existing file before regular file
+go run test.go no-such-file foo.txt
+<<<
+>>>
+foo.txt: foo
+foo.txt: bar
+foo.txt: baz
+>>>2 /no such file or directory/
+>>>= 0
