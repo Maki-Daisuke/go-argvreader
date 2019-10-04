@@ -63,14 +63,14 @@ You can pass file list manually, of course:
 ```go
 type Reader interface {
 	io.Reader
-	CurrentFileName() string
+	Name() string
 }
 ```
 
 `Reader` provides functionality just like Perl's `ARGV` file-handle and `$ARGV`
 variable.
 
-`CurrnetFileName` returns a file name that is currently open and being read. It
+`Name` returns a file name that is currently open and being read. It
 returns `"-"` if the Reader is reading from STDIN.
 
 #### func  New
