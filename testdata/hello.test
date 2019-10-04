@@ -1,0 +1,14 @@
+# Hello, world!
+go run test.go
+<<<
+Hello
+world!
+>>>
+-: Hello
+-: world!
+>>>2
+>>>= 0
+
+# Test empty input.
+go run test.go
+>>>= 0

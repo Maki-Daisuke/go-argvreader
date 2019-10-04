@@ -1,0 +1,12 @@
+# Test multiple files
+go run test.go hoge.txt foo.txt
+<<<
+>>>
+hoge.txt: hoge
+hoge.txt: fuga
+hoge.txt: piyo
+foo.txt: foo
+foo.txt: bar
+foo.txt: baz
+>>>2
+>>>= 0
